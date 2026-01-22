@@ -1,0 +1,20 @@
+services:
+  # Service untuk aplikasi Lua
+  lua_app:
+    build: .
+    container_name: terminal_dev_app
+    volumes:
+      - ./app.lua:/app/app.lua
+    restart: always
+
+  # Service untuk Nginx sebagai Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: terminal_dev_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - lua_app
+    restart: always
