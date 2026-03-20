@@ -1,10 +1,10 @@
 local pegasus = require('pegasus')
 
 -- KONFIGURASI SERVER
-local PORT = 9090
+PORT = os.getenv("PORT") or 9090
 local server = pegasus:new({
     port = PORT,
-    location = '.',
+    location = '',
     debug = true
 })
 
@@ -130,18 +130,21 @@ local routes = {
         <button class="run-btn" onclick="sendWA()">EXECUTE --send</button>
         <script>
             function sendWA() {
-                const msg = document.getElementById('msg').value;
+                const msgInput = document.getElementById('msg');
+                const msg = msgInput.value;
                 if(!msg) return alert('Hmmm... Gk Boleh Kosong Ngab!!');
                 window.open("https://wa.me/62895701060973?text=" + encodeURIComponent(msg));
+                msgInput.value = '';
             }
         </script>
-    ]]
+    ]],
 }
+routes["/index.html"] = routes["/"]
 
 -- START SERVER
 print("\27[32m[OK]\27[0m Server running at http://localhost:" .. PORT)
 server:start(function(req, res)
-    local path = req:path() == "/index.html" and "/" or req:path()
+    local path = req:path()
     local content = routes[path] or "<div style='color:#ff7b72'>404: Command Not Found</div>"
     res:write(wrap_layout(content))
 end)
